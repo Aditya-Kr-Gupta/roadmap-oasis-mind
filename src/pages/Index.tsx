@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Brain, Target, Clock, BarChart3, Maximize2, Sparkles } from 'lucide-react';
+import { Brain, Target, Clock, BarChart3, Maximize2, Sparkles, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ThemeProvider } from '@/components/ThemeProvider';
@@ -12,6 +12,7 @@ import PomodoroTimer from '@/components/PomodoroTimer';
 import ProgressAnalytics from '@/components/ProgressAnalytics';
 import FlipClock from '@/components/FlipClock';
 import RelaxationSounds from '@/components/RelaxationSounds';
+import UserProfile from '@/components/UserProfile';
 
 const Index = () => {
   const [isClockFullscreen, setIsClockFullscreen] = useState(false);
@@ -90,7 +91,7 @@ const Index = () => {
 
           {/* Main Tabs */}
           <Tabs defaultValue="roadmap" className="space-y-8">
-            <TabsList className="grid w-full grid-cols-2 lg:grid-cols-4 h-auto p-2 glass-morphism border-0 shadow-lg">
+            <TabsList className="grid w-full grid-cols-2 lg:grid-cols-5 h-auto p-2 glass-morphism border-0 shadow-lg">
               <TabsTrigger 
                 value="roadmap" 
                 className="flex items-center space-x-3 py-4 px-6 data-[state=active]:bg-pixel-500 data-[state=active]:text-white transition-all duration-300 hover:scale-105"
@@ -118,6 +119,13 @@ const Index = () => {
               >
                 <BarChart3 className="h-5 w-5" />
                 <span className="hidden sm:inline font-medium">Analytics</span>
+              </TabsTrigger>
+              <TabsTrigger 
+                value="profile" 
+                className="flex items-center space-x-3 py-4 px-6 data-[state=active]:bg-indigo-500 data-[state=active]:text-white transition-all duration-300 hover:scale-105"
+              >
+                <User className="h-5 w-5" />
+                <span className="hidden sm:inline font-medium">Profile</span>
               </TabsTrigger>
             </TabsList>
 
@@ -180,6 +188,11 @@ const Index = () => {
             <TabsContent value="analytics" className="space-y-8">
               <ProgressAnalytics />
             </TabsContent>
+
+            {/* Profile Tab */}
+            <TabsContent value="profile" className="space-y-8">
+              <UserProfile />
+            </TabsContent>
           </Tabs>
         </main>
 
@@ -187,10 +200,10 @@ const Index = () => {
         <footer className="relative bg-white/50 dark:bg-zen-800/50 backdrop-blur-sm border-t border-zen-200/50 dark:border-zen-700/50 mt-20">
           <div className="container mx-auto px-6 py-12">
             <div className="text-center">
-              <p className="text-muted-foreground text-lg mb-2">
+              <p className="text-zen-800 dark:text-zen-200 text-lg mb-2">
                 Built with 💙 for mindful learning and productivity
               </p>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-sm text-zen-600 dark:text-zen-400">
                 Stay focused, stay motivated, achieve your goals with <span className="font-semibold text-pixel-600 dark:text-pixel-400">ManasMitra</span>
               </p>
             </div>

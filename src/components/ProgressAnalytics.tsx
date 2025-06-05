@@ -4,35 +4,35 @@ import { TrendingUp, Target, Zap, Award } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
 
 const ProgressAnalytics: React.FC = () => {
-  // Realistic progress data based on current day
-  const currentDay = 12; // This would come from actual state
+  // Realistic progress data for day 1 (just starting)
+  const currentDay = 1;
   const totalDays = 90;
-  const completedTasks = 15;
-  const totalTasks = 21; // Tasks up to day 12
+  const completedTasks = 0;
+  const totalTasksToday = 2; // Day 1 has 2 tasks: Review Java fundamentals part 1
 
   const stats = {
     totalDays,
-    completedDays: currentDay,
-    currentStreak: 5,
-    longestStreak: 8,
-    averageDailyProgress: Math.round((completedTasks / totalTasks) * 100),
+    completedDays: 0, // Haven't completed any full days yet
+    currentStreak: 0, // No streak yet
+    longestStreak: 0, // No streak achieved yet
+    averageDailyProgress: 0, // No tasks completed yet
     tasksCompleted: completedTasks,
-    totalTasks: totalTasks,
+    totalTasks: totalTasksToday,
     weeklyData: [
-      { week: 'Week 1', progress: 85, completed: 7, total: 7 },
-      { week: 'Week 2', progress: 71, completed: 5, total: 7 },
+      { week: 'Week 1', progress: 0, completed: 0, total: 7 }, // Just starting
+      { week: 'Week 2', progress: 0, completed: 0, total: 7 },
       { week: 'Week 3', progress: 0, completed: 0, total: 7 },
       { week: 'Week 4', progress: 0, completed: 0, total: 7 }
     ]
   };
 
   const achievements = [
-    { name: "First Steps", description: "Complete your first task", unlocked: true, icon: "🎯" },
-    { name: "Java Basics", description: "Finish Java fundamentals", unlocked: true, icon: "☕" },
-    { name: "Week Champion", description: "Complete a full week", unlocked: true, icon: "🏆" },
+    { name: "Getting Started", description: "Begin your learning journey", unlocked: true, icon: "🎯" },
+    { name: "First Steps", description: "Complete your first task", unlocked: false, icon: "👶" },
+    { name: "Java Basics", description: "Finish Java fundamentals", unlocked: false, icon: "☕" },
+    { name: "Week Champion", description: "Complete a full week", unlocked: false, icon: "🏆" },
     { name: "Streak Master", description: "Maintain a 7-day streak", unlocked: false, icon: "🔥" },
     { name: "Database Expert", description: "Master MySQL basics", unlocked: false, icon: "🗄️" },
-    { name: "Full Stack Hero", description: "Complete full-stack project", unlocked: false, icon: "🚀" },
   ];
 
   return (
@@ -49,10 +49,10 @@ const ProgressAnalytics: React.FC = () => {
               <span className="text-sm font-medium text-muted-foreground">Overall Progress</span>
             </div>
             <p className="text-3xl font-bold text-card-foreground mb-1">
-              {((stats.completedDays / stats.totalDays) * 100).toFixed(1)}%
+              {((currentDay / stats.totalDays) * 100).toFixed(1)}%
             </p>
             <p className="text-xs text-muted-foreground">
-              {stats.completedDays}/{stats.totalDays} days completed
+              Day {currentDay} of {stats.totalDays}
             </p>
           </div>
         </div>
@@ -68,7 +68,7 @@ const ProgressAnalytics: React.FC = () => {
             </div>
             <p className="text-3xl font-bold text-card-foreground mb-1">{stats.currentStreak}</p>
             <p className="text-xs text-muted-foreground">
-              Best: {stats.longestStreak} days
+              Start your first streak!
             </p>
           </div>
         </div>
@@ -80,11 +80,11 @@ const ProgressAnalytics: React.FC = () => {
               <div className="p-2 bg-blue-500/20 rounded-lg">
                 <Target className="h-5 w-5 text-blue-600 dark:text-blue-400" />
               </div>
-              <span className="text-sm font-medium text-muted-foreground">Tasks Completed</span>
+              <span className="text-sm font-medium text-muted-foreground">Today's Tasks</span>
             </div>
             <p className="text-3xl font-bold text-card-foreground mb-1">{stats.tasksCompleted}</p>
             <p className="text-xs text-muted-foreground">
-              of {stats.totalTasks} available
+              of {stats.totalTasks} for today
             </p>
           </div>
         </div>
@@ -96,10 +96,10 @@ const ProgressAnalytics: React.FC = () => {
               <div className="p-2 bg-purple-500/20 rounded-lg">
                 <Award className="h-5 w-5 text-purple-600 dark:text-purple-400" />
               </div>
-              <span className="text-sm font-medium text-muted-foreground">Success Rate</span>
+              <span className="text-sm font-medium text-muted-foreground">Achievements</span>
             </div>
-            <p className="text-3xl font-bold text-card-foreground mb-1">{stats.averageDailyProgress}%</p>
-            <p className="text-xs text-muted-foreground">task completion</p>
+            <p className="text-3xl font-bold text-card-foreground mb-1">1</p>
+            <p className="text-xs text-muted-foreground">unlocked so far</p>
           </div>
         </div>
       </div>
@@ -125,6 +125,11 @@ const ProgressAnalytics: React.FC = () => {
               </div>
             </div>
           ))}
+        </div>
+        <div className="mt-6 p-4 bg-pixel-50 dark:bg-pixel-900/30 rounded-lg">
+          <p className="text-sm text-muted-foreground text-center">
+            📚 You're just getting started! Complete your first task to see progress here.
+          </p>
         </div>
       </div>
 

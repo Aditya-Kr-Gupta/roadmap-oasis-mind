@@ -94,6 +94,28 @@
     @apply bg-background text-foreground;
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
   }
+
+  /* Color fixes for light mode */
+  .light .text-yellow-600 {
+    color: #4C6EF5 !important;
+  }
+  
+  .light .text-yellow-400 {
+    color: #4C6EF5 !important;
+  }
+
+  /* Color fixes for dark mode */
+  .dark [style*="#FF9AFF"] {
+    color: #C1C2C5 !important;
+  }
+  
+  .dark .text-yellow-600 {
+    color: #4C6EF5 !important;
+  }
+  
+  .dark .text-yellow-400 {
+    color: #4C6EF5 !important;
+  }
 }
 
 @layer utilities {
@@ -159,5 +181,10 @@
     height: 100%;
     background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
     animation: shimmer 2s infinite;
+  }
+
+  @keyframes shimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
   }
 }
