@@ -5,82 +5,82 @@
 
 @layer base {
   :root {
-    --background: 248 250 252;
-    --foreground: 15 23 42;
+    --background: 250 250 250;
+    --foreground: 23 23 23;
 
     --card: 255 255 255;
-    --card-foreground: 15 23 42;
+    --card-foreground: 23 23 23;
 
     --popover: 255 255 255;
-    --popover-foreground: 15 23 42;
+    --popover-foreground: 23 23 23;
 
     --primary: 14 165 233;
-    --primary-foreground: 248 250 252;
+    --primary-foreground: 250 250 250;
 
-    --secondary: 241 245 249;
-    --secondary-foreground: 15 23 42;
+    --secondary: 245 245 245;
+    --secondary-foreground: 23 23 23;
 
-    --muted: 241 245 249;
-    --muted-foreground: 100 116 139;
+    --muted: 245 245 245;
+    --muted-foreground: 115 115 115;
 
-    --accent: 241 245 249;
-    --accent-foreground: 15 23 42;
+    --accent: 245 245 245;
+    --accent-foreground: 23 23 23;
 
     --destructive: 239 68 68;
-    --destructive-foreground: 248 250 252;
+    --destructive-foreground: 250 250 250;
 
-    --border: 226 232 240;
-    --input: 226 232 240;
+    --border: 229 229 229;
+    --input: 229 229 229;
     --ring: 14 165 233;
 
-    --radius: 0.5rem;
+    --radius: 0.75rem;
 
-    --sidebar-background: 248 250 252;
-    --sidebar-foreground: 71 85 105;
+    --sidebar-background: 250 250 250;
+    --sidebar-foreground: 82 82 82;
     --sidebar-primary: 14 165 233;
-    --sidebar-primary-foreground: 248 250 252;
-    --sidebar-accent: 241 245 249;
-    --sidebar-accent-foreground: 15 23 42;
-    --sidebar-border: 226 232 240;
+    --sidebar-primary-foreground: 250 250 250;
+    --sidebar-accent: 245 245 245;
+    --sidebar-accent-foreground: 23 23 23;
+    --sidebar-border: 229 229 229;
     --sidebar-ring: 14 165 233;
   }
 
   .dark {
-    --background: 15 23 42;
-    --foreground: 248 250 252;
+    --background: 23 23 23;
+    --foreground: 250 250 250;
 
-    --card: 30 41 59;
-    --card-foreground: 248 250 252;
+    --card: 38 38 38;
+    --card-foreground: 250 250 250;
 
-    --popover: 30 41 59;
-    --popover-foreground: 248 250 252;
+    --popover: 38 38 38;
+    --popover-foreground: 250 250 250;
 
     --primary: 56 189 248;
-    --primary-foreground: 15 23 42;
+    --primary-foreground: 23 23 23;
 
-    --secondary: 51 65 85;
-    --secondary-foreground: 248 250 252;
+    --secondary: 64 64 64;
+    --secondary-foreground: 250 250 250;
 
-    --muted: 51 65 85;
-    --muted-foreground: 148 163 184;
+    --muted: 64 64 64;
+    --muted-foreground: 163 163 163;
 
-    --accent: 51 65 85;
-    --accent-foreground: 248 250 252;
+    --accent: 64 64 64;
+    --accent-foreground: 250 250 250;
 
     --destructive: 239 68 68;
-    --destructive-foreground: 248 250 252;
+    --destructive-foreground: 250 250 250;
 
-    --border: 51 65 85;
-    --input: 51 65 85;
+    --border: 64 64 64;
+    --input: 64 64 64;
     --ring: 56 189 248;
 
-    --sidebar-background: 30 41 59;
-    --sidebar-foreground: 148 163 184;
+    --sidebar-background: 38 38 38;
+    --sidebar-foreground: 163 163 163;
     --sidebar-primary: 56 189 248;
-    --sidebar-primary-foreground: 15 23 42;
-    --sidebar-accent: 51 65 85;
-    --sidebar-accent-foreground: 248 250 252;
-    --sidebar-border: 51 65 85;
+    --sidebar-primary-foreground: 23 23 23;
+    --sidebar-accent: 64 64 64;
+    --sidebar-accent-foreground: 250 250 250;
+    --sidebar-border: 64 64 64;
     --sidebar-ring: 56 189 248;
   }
 }
@@ -128,13 +128,36 @@
   }
 
   .glass-morphism {
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(16px);
     border: 1px solid rgba(255, 255, 255, 0.2);
   }
 
   .dark .glass-morphism {
-    background: rgba(0, 0, 0, 0.2);
+    background: rgba(0, 0, 0, 0.25);
     border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .animated-gradient {
+    background: linear-gradient(-45deg, #0ea5e9, #3b82f6, #8b5cf6, #ec4899);
+    background-size: 400% 400%;
+    animation: gradient 15s ease infinite;
+  }
+
+  @keyframes gradient {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+
+  .shimmer::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    animation: shimmer 2s infinite;
   }
 }

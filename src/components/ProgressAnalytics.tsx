@@ -4,119 +4,168 @@ import { TrendingUp, Target, Zap, Award } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
 
 const ProgressAnalytics: React.FC = () => {
+  // Realistic progress data based on current day
+  const currentDay = 12; // This would come from actual state
+  const totalDays = 90;
+  const completedTasks = 15;
+  const totalTasks = 21; // Tasks up to day 12
+
   const stats = {
-    totalDays: 90,
-    completedDays: 12,
+    totalDays,
+    completedDays: currentDay,
     currentStreak: 5,
     longestStreak: 8,
-    averageDailyProgress: 85,
-    tasksCompleted: 156,
-    totalTasks: 300,
+    averageDailyProgress: Math.round((completedTasks / totalTasks) * 100),
+    tasksCompleted: completedTasks,
+    totalTasks: totalTasks,
+    weeklyData: [
+      { week: 'Week 1', progress: 85, completed: 7, total: 7 },
+      { week: 'Week 2', progress: 71, completed: 5, total: 7 },
+      { week: 'Week 3', progress: 0, completed: 0, total: 7 },
+      { week: 'Week 4', progress: 0, completed: 0, total: 7 }
+    ]
   };
 
   const achievements = [
     { name: "First Steps", description: "Complete your first task", unlocked: true, icon: "🎯" },
-    { name: "Streak Master", description: "Maintain a 7-day streak", unlocked: true, icon: "🔥" },
-    { name: "Java Ninja", description: "Complete Java fundamentals", unlocked: true, icon: "☕" },
+    { name: "Java Basics", description: "Finish Java fundamentals", unlocked: true, icon: "☕" },
+    { name: "Week Champion", description: "Complete a full week", unlocked: true, icon: "🏆" },
+    { name: "Streak Master", description: "Maintain a 7-day streak", unlocked: false, icon: "🔥" },
     { name: "Database Expert", description: "Master MySQL basics", unlocked: false, icon: "🗄️" },
-    { name: "Frontend Wizard", description: "Build your first website", unlocked: false, icon: "🎨" },
     { name: "Full Stack Hero", description: "Complete full-stack project", unlocked: false, icon: "🚀" },
   ];
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 animate-fade-in">
       {/* Stats Overview */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-card rounded-lg p-4 shadow-sm border">
-          <div className="flex items-center space-x-2 mb-2">
-            <TrendingUp className="h-5 w-5 text-green-500" />
-            <span className="text-sm font-medium text-muted-foreground">Progress</span>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="group relative overflow-hidden bg-gradient-to-br from-pixel-50 to-pixel-100 dark:from-pixel-900 dark:to-pixel-800 rounded-2xl p-6 shadow-lg border-0 transition-all duration-300 hover:shadow-xl hover:scale-105">
+          <div className="absolute inset-0 bg-gradient-to-br from-pixel-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+          <div className="relative">
+            <div className="flex items-center space-x-3 mb-3">
+              <div className="p-2 bg-green-500/20 rounded-lg">
+                <TrendingUp className="h-5 w-5 text-green-600 dark:text-green-400" />
+              </div>
+              <span className="text-sm font-medium text-muted-foreground">Overall Progress</span>
+            </div>
+            <p className="text-3xl font-bold text-card-foreground mb-1">
+              {((stats.completedDays / stats.totalDays) * 100).toFixed(1)}%
+            </p>
+            <p className="text-xs text-muted-foreground">
+              {stats.completedDays}/{stats.totalDays} days completed
+            </p>
           </div>
-          <p className="text-2xl font-bold text-card-foreground">
-            {((stats.completedDays / stats.totalDays) * 100).toFixed(1)}%
-          </p>
-          <p className="text-xs text-muted-foreground">
-            {stats.completedDays}/{stats.totalDays} days
-          </p>
         </div>
 
-        <div className="bg-card rounded-lg p-4 shadow-sm border">
-          <div className="flex items-center space-x-2 mb-2">
-            <Zap className="h-5 w-5 text-yellow-500" />
-            <span className="text-sm font-medium text-muted-foreground">Current Streak</span>
+        <div className="group relative overflow-hidden bg-gradient-to-br from-coral-50 to-coral-100 dark:from-coral-900 dark:to-coral-800 rounded-2xl p-6 shadow-lg border-0 transition-all duration-300 hover:shadow-xl hover:scale-105">
+          <div className="absolute inset-0 bg-gradient-to-br from-coral-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+          <div className="relative">
+            <div className="flex items-center space-x-3 mb-3">
+              <div className="p-2 bg-yellow-500/20 rounded-lg animate-glow">
+                <Zap className="h-5 w-5 text-yellow-600 dark:text-yellow-400" />
+              </div>
+              <span className="text-sm font-medium text-muted-foreground">Current Streak</span>
+            </div>
+            <p className="text-3xl font-bold text-card-foreground mb-1">{stats.currentStreak}</p>
+            <p className="text-xs text-muted-foreground">
+              Best: {stats.longestStreak} days
+            </p>
           </div>
-          <p className="text-2xl font-bold text-card-foreground">{stats.currentStreak}</p>
-          <p className="text-xs text-muted-foreground">
-            Best: {stats.longestStreak} days
-          </p>
         </div>
 
-        <div className="bg-card rounded-lg p-4 shadow-sm border">
-          <div className="flex items-center space-x-2 mb-2">
-            <Target className="h-5 w-5 text-blue-500" />
-            <span className="text-sm font-medium text-muted-foreground">Tasks Done</span>
+        <div className="group relative overflow-hidden bg-gradient-to-br from-sage-50 to-sage-100 dark:from-sage-900 dark:to-sage-800 rounded-2xl p-6 shadow-lg border-0 transition-all duration-300 hover:shadow-xl hover:scale-105">
+          <div className="absolute inset-0 bg-gradient-to-br from-sage-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+          <div className="relative">
+            <div className="flex items-center space-x-3 mb-3">
+              <div className="p-2 bg-blue-500/20 rounded-lg">
+                <Target className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+              </div>
+              <span className="text-sm font-medium text-muted-foreground">Tasks Completed</span>
+            </div>
+            <p className="text-3xl font-bold text-card-foreground mb-1">{stats.tasksCompleted}</p>
+            <p className="text-xs text-muted-foreground">
+              of {stats.totalTasks} available
+            </p>
           </div>
-          <p className="text-2xl font-bold text-card-foreground">{stats.tasksCompleted}</p>
-          <p className="text-xs text-muted-foreground">
-            of {stats.totalTasks} total
-          </p>
         </div>
 
-        <div className="bg-card rounded-lg p-4 shadow-sm border">
-          <div className="flex items-center space-x-2 mb-2">
-            <Award className="h-5 w-5 text-purple-500" />
-            <span className="text-sm font-medium text-muted-foreground">Avg. Daily</span>
+        <div className="group relative overflow-hidden bg-gradient-to-br from-zen-50 to-zen-100 dark:from-zen-900 dark:to-zen-800 rounded-2xl p-6 shadow-lg border-0 transition-all duration-300 hover:shadow-xl hover:scale-105">
+          <div className="absolute inset-0 bg-gradient-to-br from-zen-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+          <div className="relative">
+            <div className="flex items-center space-x-3 mb-3">
+              <div className="p-2 bg-purple-500/20 rounded-lg">
+                <Award className="h-5 w-5 text-purple-600 dark:text-purple-400" />
+              </div>
+              <span className="text-sm font-medium text-muted-foreground">Success Rate</span>
+            </div>
+            <p className="text-3xl font-bold text-card-foreground mb-1">{stats.averageDailyProgress}%</p>
+            <p className="text-xs text-muted-foreground">task completion</p>
           </div>
-          <p className="text-2xl font-bold text-card-foreground">{stats.averageDailyProgress}%</p>
-          <p className="text-xs text-muted-foreground">completion rate</p>
         </div>
       </div>
 
       {/* Weekly Progress */}
-      <div className="bg-card rounded-xl p-6 shadow-lg border">
-        <h3 className="text-lg font-semibold mb-4 text-card-foreground">Weekly Progress</h3>
-        <div className="space-y-3">
-          {['Week 1', 'Week 2', 'Week 3', 'Week 4'].map((week, index) => {
-            const progress = index === 0 ? 100 : index === 1 ? 85 : index === 2 ? 45 : 0;
-            return (
-              <div key={week}>
-                <div className="flex justify-between text-sm mb-1">
-                  <span className="text-muted-foreground">{week}</span>
-                  <span className="text-card-foreground font-medium">{progress}%</span>
-                </div>
-                <Progress value={progress} className="h-2" />
+      <div className="bg-card rounded-2xl p-8 shadow-lg border-0 backdrop-blur-sm animate-slide-up">
+        <h3 className="text-xl font-semibold mb-6 text-card-foreground flex items-center">
+          <div className="w-1 h-6 bg-pixel-500 rounded-full mr-3" />
+          Weekly Progress Breakdown
+        </h3>
+        <div className="space-y-4">
+          {stats.weeklyData.map((week, index) => (
+            <div key={week.week} className="group" style={{ animationDelay: `${index * 100}ms` }}>
+              <div className="flex justify-between text-sm mb-2">
+                <span className="text-muted-foreground font-medium">{week.week}</span>
+                <span className="text-card-foreground font-semibold">
+                  {week.progress}% ({week.completed}/{week.total})
+                </span>
               </div>
-            );
-          })}
+              <div className="relative">
+                <Progress value={week.progress} className="h-3 transition-all duration-500 group-hover:h-4" />
+                <div className="absolute inset-0 bg-gradient-to-r from-pixel-500/20 to-transparent rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              </div>
+            </div>
+          ))}
         </div>
       </div>
 
       {/* Achievements */}
-      <div className="bg-card rounded-xl p-6 shadow-lg border">
-        <h3 className="text-lg font-semibold mb-4 text-card-foreground">Achievements</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+      <div className="bg-card rounded-2xl p-8 shadow-lg border-0 backdrop-blur-sm animate-scale-in">
+        <h3 className="text-xl font-semibold mb-6 text-card-foreground flex items-center">
+          <div className="w-1 h-6 bg-coral-500 rounded-full mr-3" />
+          Achievements & Milestones
+        </h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {achievements.map((achievement, index) => (
             <div
               key={index}
-              className={`p-3 rounded-lg border transition-all duration-200 ${
+              className={`group relative p-4 rounded-xl border transition-all duration-300 hover:scale-105 ${
                 achievement.unlocked
-                  ? 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800'
-                  : 'bg-muted/50 border-muted opacity-50'
+                  ? 'bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/30 dark:to-emerald-900/30 border-green-200 dark:border-green-700 shadow-lg'
+                  : 'bg-muted/50 border-muted opacity-60 hover:opacity-80'
               }`}
+              style={{ animationDelay: `${index * 150}ms` }}
             >
-              <div className="flex items-center space-x-2 mb-1">
-                <span className="text-lg">{achievement.icon}</span>
-                <span className={`font-medium text-sm ${
-                  achievement.unlocked ? 'text-green-800 dark:text-green-200' : 'text-muted-foreground'
+              {achievement.unlocked && (
+                <div className="absolute inset-0 bg-gradient-to-br from-green-500/10 to-transparent rounded-xl" />
+              )}
+              <div className="relative">
+                <div className="flex items-center space-x-3 mb-2">
+                  <span className="text-2xl animate-bounce-gentle">{achievement.icon}</span>
+                  <span className={`font-medium text-sm ${
+                    achievement.unlocked ? 'text-green-800 dark:text-green-200' : 'text-muted-foreground'
+                  }`}>
+                    {achievement.name}
+                  </span>
+                </div>
+                <p className={`text-xs ${
+                  achievement.unlocked ? 'text-green-600 dark:text-green-300' : 'text-muted-foreground'
                 }`}>
-                  {achievement.name}
-                </span>
+                  {achievement.description}
+                </p>
+                {achievement.unlocked && (
+                  <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full animate-pulse" />
+                )}
               </div>
-              <p className={`text-xs ${
-                achievement.unlocked ? 'text-green-600 dark:text-green-300' : 'text-muted-foreground'
-              }`}>
-                {achievement.description}
-              </p>
             </div>
           ))}
         </div>
