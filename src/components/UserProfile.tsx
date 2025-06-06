@@ -1,59 +1,178 @@
 
-import React, { useState } from 'react';
-import { User, Settings, Trophy, Calendar, Target } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { User, Settings, Trophy, Calendar, Target, TrendingUp } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { useAuth } from '@/hooks/useAuth';
+import { supabase } from '@/integrations/supabase/client';
+import { AuthModal } from './AuthModal';
 
-interface UserData {
-  name: string;
-  email: string;
-  avatar?: string;
-  currentDay: number;
-  totalDays: number;
+interface UserStats {
+  totalTasks: number;
   completedTasks: number;
+  currentDay: number;
   streak: number;
-  joinDate: string;
-  level: number;
+  completionRate: number;
 }
 
 const UserProfile: React.FC = () => {
-  const [userData] = useState<UserData>({
-    name: "Alex Johnson",
-    email: "alex.johnson@email.com",
-    avatar: "",
-    currentDay: 1,
-    totalDays: 90,
+  const { user, profile, loading } = useAuth();
+  const [userStats, setUserStats] = useState<UserStats>({
+    totalTasks: 0,
     completedTasks: 0,
+    currentDay: 1,
     streak: 0,
-    joinDate: "2024-06-05",
-    level: 1
+    completionRate: 0,
   });
+  const [authModalOpen, setAuthModalOpen] = useState(false);
+  const [statsLoading, setStatsLoading] = useState(true);
+
+  useEffect(() => {
+    if (user) {
+      fetchUserStats();
+    } else {
+      setStatsLoading(false);
+    }
+  }, [user]);
+
+  const fetchUserStats = async () => {
+    if (!user) return;
+
+    try {
+      // Fetch total tasks
+      const { data: allTasks, error: tasksError } = await supabase
+        .from('roadmap_tasks')
+        .select('id');
+
+      if (tasksError) throw tasksError;
+
+      // Fetch user progress
+      const { data: userProgress, error: progressError } = await supabase
+        .from('user_progress')
+        .select('*')
+        .eq('user_id', user.id);
+
+      if (progressError) throw progressError;
+
+      const totalTasks = allTasks?.length || 0;
+      const completedTasks = userProgress?.filter(p => p.completed).length || 0;
+      const completionRate = totalTasks > 0 ? (completedTasks / totalTasks) * 100 : 0;
+
+      // Calculate current day (simple logic - can be enhanced)
+      const currentDay = Math.max(1, completedTasks + 1);
+
+      // Calculate streak (simplified - check consecutive completed days)
+      const streak = calculateStreak(userProgress || []);
+
+      setUserStats({
+        totalTasks,
+        completedTasks,
+        currentDay: Math.min(currentDay, 90),
+        streak,
+        completionRate,
+      });
+    } catch (error) {
+      console.error('Error fetching user stats:', error);
+    } finally {
+      setStatsLoading(false);
+    }
+  };
+
+  const calculateStreak = (progress: any[]) => {
+    // Simple streak calculation - can be enhanced with more sophisticated logic
+    const completedDates = progress
+      .filter(p => p.completed && p.completed_at)
+      .map(p => new Date(p.completed_at).toDateString())
+      .sort();
+
+    if (completedDates.length === 0) return 0;
+
+    let streak = 1;
+    for (let i = completedDates.length - 1; i > 0; i--) {
+      const current = new Date(completedDates[i]);
+      const previous = new Date(completedDates[i - 1]);
+      const diffTime = Math.abs(current.getTime() - previous.getTime());
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+      if (diffDays === 1) {
+        streak++;
+      } else {
+        break;
+      }
+    }
+    return streak;
+  };
+
+  if (loading || statsLoading) {
+    return (
+      <div className="space-y-6 animate-pulse">
+        <Card>
+          <CardHeader>
+            <div className="flex items-center space-x-4">
+              <div className="h-20 w-20 bg-muted rounded-full"></div>
+              <div className="space-y-2">
+                <div className="h-6 bg-muted rounded w-48"></div>
+                <div className="h-4 bg-muted rounded w-64"></div>
+              </div>
+            </div>
+          </CardHeader>
+        </Card>
+      </div>
+    );
+  }
+
+  if (!user || !profile) {
+    return (
+      <div className="space-y-6">
+        <Card className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border-blue-200 dark:border-blue-700">
+          <CardHeader className="text-center py-12">
+            <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center mx-auto mb-4">
+              <User className="h-8 w-8 text-white" />
+            </div>
+            <CardTitle className="text-2xl mb-2">Welcome to Learning Platform</CardTitle>
+            <CardDescription className="text-lg mb-6">
+              Sign in to access your personalized learning dashboard and track your progress.
+            </CardDescription>
+            <Button 
+              onClick={() => setAuthModalOpen(true)}
+              className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
+            >
+              Get Started
+            </Button>
+          </CardHeader>
+        </Card>
+        <AuthModal open={authModalOpen} onOpenChange={setAuthModalOpen} />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6 animate-fade-in">
       {/* Profile Header */}
-      <Card className="glass-morphism border-0 shadow-lg">
+      <Card className="bg-gradient-to-br from-indigo-50 via-white to-purple-50 dark:from-slate-900 dark:via-slate-800 dark:to-indigo-900 border-0 shadow-xl">
         <CardHeader className="pb-4">
           <div className="flex items-center space-x-4">
-            <Avatar className="h-20 w-20 border-4 border-pixel-200 dark:border-pixel-700">
-              <AvatarImage src={userData.avatar} alt={userData.name} />
-              <AvatarFallback className="bg-pixel-100 dark:bg-pixel-800 text-pixel-700 dark:text-pixel-300 text-xl font-bold">
-                {userData.name.split(' ').map(n => n[0]).join('')}
+            <Avatar className="h-20 w-20 border-4 border-indigo-200 dark:border-indigo-700 shadow-lg">
+              <AvatarImage src={profile.avatar_url} alt={profile.full_name} />
+              <AvatarFallback className="bg-gradient-to-br from-indigo-500 to-purple-600 text-white text-xl font-bold">
+                {profile.full_name.split(' ').map(n => n[0]).join('')}
               </AvatarFallback>
             </Avatar>
             <div className="flex-1">
-              <CardTitle className="text-2xl text-card-foreground">{userData.name}</CardTitle>
-              <CardDescription className="text-lg">{userData.email}</CardDescription>
+              <CardTitle className="text-2xl text-card-foreground">{profile.full_name}</CardTitle>
+              <CardDescription className="text-lg">{profile.email}</CardDescription>
               <div className="flex items-center mt-2 space-x-4">
                 <div className="flex items-center space-x-1 text-sm text-muted-foreground">
                   <Calendar className="h-4 w-4" />
-                  <span>Joined {new Date(userData.joinDate).toLocaleDateString()}</span>
+                  <span>Joined {new Date(profile.created_at).toLocaleDateString()}</span>
                 </div>
-                <div className="flex items-center space-x-1 text-sm text-pixel-600 dark:text-pixel-400">
-                  <Trophy className="h-4 w-4" />
-                  <span>Level {userData.level}</span>
-                </div>
+                {profile.role === 'admin' && (
+                  <div className="flex items-center space-x-1 text-sm font-medium">
+                    <Trophy className="h-4 w-4 text-amber-500" />
+                    <span className="text-amber-600 dark:text-amber-400">Admin</span>
+                  </div>
+                )}
               </div>
             </div>
             <Button variant="outline" size="sm" className="hover:scale-105 transition-all duration-300">
@@ -66,56 +185,74 @@ const UserProfile: React.FC = () => {
 
       {/* Quick Stats */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card className="bg-gradient-to-br from-pixel-50 to-pixel-100 dark:from-pixel-900 dark:to-pixel-800 border-0 shadow-lg hover:scale-105 transition-all duration-300">
+        <Card className="bg-gradient-to-br from-emerald-50 to-green-100 dark:from-emerald-900/20 dark:to-green-900/20 border-0 shadow-lg hover:scale-105 transition-all duration-300">
           <CardContent className="p-6 text-center">
-            <Target className="h-8 w-8 text-pixel-600 dark:text-pixel-400 mx-auto mb-2" />
-            <h3 className="text-2xl font-bold text-card-foreground">{userData.currentDay}</h3>
+            <Target className="h-8 w-8 text-emerald-600 dark:text-emerald-400 mx-auto mb-2" />
+            <h3 className="text-2xl font-bold text-card-foreground">{userStats.currentDay}</h3>
             <p className="text-sm text-muted-foreground">Current Day</p>
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-sage-50 to-sage-100 dark:from-sage-900 dark:to-sage-800 border-0 shadow-lg hover:scale-105 transition-all duration-300">
+        <Card className="bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-blue-900/20 dark:to-indigo-900/20 border-0 shadow-lg hover:scale-105 transition-all duration-300">
           <CardContent className="p-6 text-center">
-            <Trophy className="h-8 w-8 text-sage-600 dark:text-sage-400 mx-auto mb-2" />
-            <h3 className="text-2xl font-bold text-card-foreground">{userData.completedTasks}</h3>
+            <Trophy className="h-8 w-8 text-blue-600 dark:text-blue-400 mx-auto mb-2" />
+            <h3 className="text-2xl font-bold text-card-foreground">{userStats.completedTasks}</h3>
             <p className="text-sm text-muted-foreground">Tasks Completed</p>
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-coral-50 to-coral-100 dark:from-coral-900 dark:to-coral-800 border-0 shadow-lg hover:scale-105 transition-all duration-300">
+        <Card className="bg-gradient-to-br from-orange-50 to-red-100 dark:from-orange-900/20 dark:to-red-900/20 border-0 shadow-lg hover:scale-105 transition-all duration-300">
           <CardContent className="p-6 text-center">
             <div className="text-2xl mb-2">🔥</div>
-            <h3 className="text-2xl font-bold text-card-foreground">{userData.streak}</h3>
+            <h3 className="text-2xl font-bold text-card-foreground">{userStats.streak}</h3>
             <p className="text-sm text-muted-foreground">Day Streak</p>
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-zen-50 to-zen-100 dark:from-zen-900 dark:to-zen-800 border-0 shadow-lg hover:scale-105 transition-all duration-300">
+        <Card className="bg-gradient-to-br from-purple-50 to-pink-100 dark:from-purple-900/20 dark:to-pink-900/20 border-0 shadow-lg hover:scale-105 transition-all duration-300">
           <CardContent className="p-6 text-center">
-            <div className="text-2xl mb-2">📊</div>
-            <h3 className="text-2xl font-bold text-card-foreground">{Math.round((userData.currentDay / userData.totalDays) * 100)}%</h3>
-            <p className="text-sm text-muted-foreground">Progress</p>
+            <TrendingUp className="h-8 w-8 text-purple-600 dark:text-purple-400 mx-auto mb-2" />
+            <h3 className="text-2xl font-bold text-card-foreground">{userStats.completionRate.toFixed(1)}%</h3>
+            <p className="text-sm text-muted-foreground">Completion Rate</p>
           </CardContent>
         </Card>
       </div>
 
       {/* Recent Activity */}
-      <Card className="glass-morphism border-0 shadow-lg">
+      <Card className="bg-gradient-to-br from-slate-50 to-gray-100 dark:from-slate-900 dark:to-gray-900 border-0 shadow-lg">
         <CardHeader>
           <CardTitle className="flex items-center">
-            <div className="w-1 h-6 bg-pixel-500 rounded-full mr-3" />
-            Recent Activity
+            <div className="w-1 h-6 bg-gradient-to-b from-indigo-500 to-purple-600 rounded-full mr-3" />
+            Learning Progress
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-3">
-            <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
-              <span className="text-sm text-muted-foreground">Ready to start your learning journey!</span>
-              <span className="text-xs text-muted-foreground">Today</span>
+            <div className="flex items-center justify-between p-4 bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-lg border border-green-200 dark:border-green-700">
+              <span className="text-sm font-medium text-green-800 dark:text-green-200">
+                🎯 {userStats.completedTasks} tasks completed out of {userStats.totalTasks}
+              </span>
+              <span className="text-xs text-green-600 dark:text-green-400">
+                {userStats.completionRate.toFixed(1)}% progress
+              </span>
             </div>
-            <div className="flex items-center justify-between p-3 bg-muted/30 rounded-lg">
-              <span className="text-sm text-muted-foreground">Profile created</span>
-              <span className="text-xs text-muted-foreground">{new Date(userData.joinDate).toLocaleDateString()}</span>
+            
+            {userStats.streak > 0 && (
+              <div className="flex items-center justify-between p-4 bg-gradient-to-r from-orange-50 to-red-50 dark:from-orange-900/20 dark:to-red-900/20 rounded-lg border border-orange-200 dark:border-orange-700">
+                <span className="text-sm font-medium text-orange-800 dark:text-orange-200">
+                  🔥 {userStats.streak} day learning streak!
+                </span>
+                <span className="text-xs text-orange-600 dark:text-orange-400">Keep it up!</span>
+              </div>
+            )}
+            
+            <div className="flex items-center justify-between p-4 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-lg border border-blue-200 dark:border-blue-700">
+              <span className="text-sm font-medium text-blue-800 dark:text-blue-200">
+                📚 Currently on Day {userStats.currentDay} of your learning journey
+              </span>
+              <span className="text-xs text-blue-600 dark:text-blue-400">
+                {90 - userStats.currentDay} days remaining
+              </span>
             </div>
           </div>
         </CardContent>
