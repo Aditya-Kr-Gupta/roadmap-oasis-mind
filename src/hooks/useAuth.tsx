@@ -52,7 +52,14 @@ export const useAuth = () => {
         .single();
 
       if (error) throw error;
-      setProfile(data);
+      
+      // Ensure role is properly typed
+      const profileData: UserProfile = {
+        ...data,
+        role: data.role as 'user' | 'admin'
+      };
+      
+      setProfile(profileData);
     } catch (error) {
       console.error('Error fetching profile:', error);
     } finally {
